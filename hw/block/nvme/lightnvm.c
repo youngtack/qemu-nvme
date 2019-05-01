@@ -1174,13 +1174,9 @@ static int lnvm_init_namespace(NvmeCtrl *n, NvmeNamespace *ns, Error **errp)
     lns->chunkinfo_size = QEMU_ALIGN_UP(chks_total * sizeof(LnvmCS), ln->blk_hdr.sector_size);
     lns->chunk_info = g_malloc0(lns->chunkinfo_size);
 
-    ns->ns_blks = nvme_ns_calc_blks(n, ns) -
-        (2 + lns->chunkinfo_size / NVME_ID_NS_LBADS_BYTES(ns));
-
-    ns->blk.predef = ns->blk.begin + sizeof(LnvmNamespaceGeometry) +
-        lns->chunkinfo_size + NVME_ID_NS_LBADS_BYTES(ns);
-    ns->blk.data = ns->blk.begin + (2 * NVME_ID_NS_LBADS_BYTES(ns)) +
-        lns->chunkinfo_size;
+    ns->ns_blks = nvme_ns_calc_blks(n, ns) - (1 + lns->chunkinfo_size / NVME_ID_NS_LBADS_BYTES(ns));
+    ns->blk.predef = ns->blk.begin + sizeof(LnvmNamespaceGeometry) + lns->chunkinfo_size;
+    ns->blk.data = ns->blk.predef + NVME_ID_NS_LBADS_BYTES(ns);
     ns->blk.meta = ns->blk.data + NVME_ID_NS_LBADS_BYTES(ns) * ns->ns_blks;
 
     nvme_ns_init_predef(n, ns);

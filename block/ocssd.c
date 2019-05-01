@@ -349,8 +349,8 @@ static int coroutine_fn ocssd_co_create_opts(const char *filename,
     /* add space for header and logpage */
     ns_size = usable_size + sizeof(LnvmNamespaceGeometry) + logpage_size;
 
-    /* add space for one sector containing predefined data */
-    ns_size += sec_size;
+    /* add space for qemu img header and predefined data */
+    ns_size += (2 * sec_size);
 
     size = sizeof(LnvmHeader) + ns_size * num_ns;
 
